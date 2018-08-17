@@ -1,0 +1,213 @@
+﻿<div id="divModalEditAutor" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditAutor()">&times;</button>
+
+                <h4 class="modal-title">Edición de Autor</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditAutorNombre">Nombre *</label>
+
+                            <input type="hidden" id="hiddenEditAutorId" />
+                            <input type="text" class="form-control input-sm" id="EditAutorNombre" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditAutorApellidoPaterno">Apellido paterno *</label>
+
+                            <input type="text" class="form-control input-sm" id="EditAutorApellidoPaterno" maxlength="50" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditAutorApellidoMaterno">Apellido materno</label>
+
+                            <input type="text" class="form-control input-sm" id="EditAutorApellidoMaterno" maxlength="50" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditAutor" onclick="guardarModalEditAutor()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditAutor" onclick="eliminarModalEditAutor()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _onActionEditAutor = null;
+
+    function mostrarModalEditAutor(idEditAutor, onActionEditAutor) {
+        _onActionEditAutor = onActionEditAutor;
+
+        $(document).ready(function () {
+            $("#hiddenEditAutorId").val("");
+            $("#EditAutorNombre").val("");
+            $("#EditAutorApellidoPaterno").val("");
+            $("#EditAutorApellidoMaterno").val("");
+            $("#btnEliminarEditAutor").hide();
+
+            if (idEditAutor && idEditAutor > 0)
+                getEditAutorById(idEditAutor);
+
+            var divModalEditAutor = $("#divModalEditAutor");
+
+            divModalEditAutor.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditAutorNombre").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditAutor.modal("show");
+        });
+    }
+
+    function ocultarModalEditAutor() {
+        _onActionEditAutor = null;
+
+        var divModalEditAutor = $("#divModalEditAutor");
+        divModalEditAutor.off("shown.bs.modal");
+        divModalEditAutor.modal("hide");
+    }
+
+    function getEditAutorById(id) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Autor/ObtenerPorId?id=" + encodeURI(id),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditAutorId").val(data.id);
+                    $("#EditAutorNombre").val(data.nombre);
+                    $("#EditAutorApellidoPaterno").val(data.apellido_paterno);
+                    $("#EditAutorApellidoMaterno").val(data.apellido_materno ? data.apellido_materno : "");
+
+                    $("#btnEliminarEditAutor").show();
+
+                    $("#EditAutorNombre").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditAutor();
+                    });
+            });
+    }
+
+    function guardarModalEditAutor() {
+        var editAutorNombre = $("#EditAutorNombre").val().trim();
+
+        if (!editAutorNombre) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el nombre del Autor antes de continuar");
+            return;
+        }
+
+        var editAutorApellidoPaterno = $("#EditAutorApellidoPaterno").val().trim();
+
+        if (!editAutorApellidoPaterno) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el apellido paterno del Autor antes de continuar");
+            return;
+        }
+
+        var editAutorApellidoMaterno = $("#EditAutorApellidoMaterno").val().trim();
+
+        var data = {};
+        data.nombre = editAutorNombre;
+        data.apellido_paterno = editAutorApellidoPaterno;
+        data.apellido_materno = editAutorApellidoMaterno ? editAutorApellidoMaterno : null;
+
+        var editAutorId = $("#hiddenEditAutorId").val().trim();
+
+        if (editAutorId)
+            data.id = parseInt(editAutorId);
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/Autor/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditAutor && typeof (_onActionEditAutor) === "function")
+                    _onActionEditAutor();
+
+                ocultarModalEditAutor();
+            });
+    }
+
+    function eliminarModalEditAutor() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editAutorId = $("#hiddenEditAutorId").val().trim();
+
+            if (editAutorId) {
+                data.id = parseInt(editAutorId);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/Autor/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditAutor && typeof (_onActionEditAutor) === "function")
+                            _onActionEditAutor();
+
+                        ocultarModalEditAutor();
+                    });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,116 @@
+﻿
+@{
+    ViewBag.Title = "Edición de Autores";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label class="control-label" for="EdicionAutorNombre">Autor</label>
+
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-md" id="EdicionAutorNombre" maxlength="150" autocomplete="off" />
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-md pull-right" onclick="findEdicionAutorPorCoincidencia()">
+                                            <span class="fa fa-search"></span> Buscar
+                                        </button>
+                                    </span>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" onclick="agregarEdicionAutor(0)">
+                                            <span class="fa fa-plus"></span> Agregar
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-success">
+                <div class="box-body table-responsive no-padding">
+                    <div class="table-responsive">
+                        <table id="tblEdicionAutor" class="table table-bordered table-vmiddle">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="nombre_completo" data-type="string" data-width="80%">NOMBRE</th>
+                                    <th data-column-id="id" data-type="numeric" data-formatter="comandos" data-sortable="false" data-width="20%">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_EditAutor")
+
+@section Scripts{
+    <script>
+        var _bootGridEdicionAutor = null;
+
+        function findEdicionAutorPorCoincidencia() {
+            var nombre = $("#EdicionAutorNombre").val().trim();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Autor/ObtenerPorCoincidencia?nombre=" + (nombre ? encodeURI(nombre) : ""),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        _bootGridEdicionAutor.bootgrid("append", data);
+                }, null, function () {
+                    if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                        mostrarOverlayLoading(true);
+
+                    _bootGridEdicionAutor.bootgrid("clear");
+                }, null);
+        }
+
+        function agregarEdicionAutor(id) {
+            mostrarModalEditAutor(id, function () {
+                findEdicionAutorPorCoincidencia();
+            });
+        }
+
+        $(document).ready(function () {
+            var divModalEdicionAutor = $("#divModalEdicionAutor");
+
+            if (!_bootGridEdicionAutor)
+                _bootGridEdicionAutor = $("#tblEdicionAutor").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='agregarEdicionAutor(" + row.id + ")'>" +
+                                "<span class='fa fa-pencil'></span> Modificar" +
+                                "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findEdicionAutorPorCoincidencia();
+        });
+    </script>
+}

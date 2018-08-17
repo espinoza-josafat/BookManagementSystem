@@ -1,0 +1,171 @@
+﻿<div id="divModalFindAutor" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalFindAutor()">&times;</button>
+
+                <h4 class="modal-title">Búsqueda de Autor</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="FindAutorNombre">Autor</label>
+
+                            <div class="input-group">
+                                <input type="text" class="form-control input-md" id="FindAutorNombre" autocomplete="off">
+
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-md pull-right" onclick="findAutorPorCoincidencia()">
+                                        <span class="fa fa-search"></span> Buscar
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <div class="table-responsive">
+                                <table id="tblFindAutor" class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th data-column-id="nombre_completo" data-width="70%">NOMBRE</th>
+                                            <th data-column-id="id" data-formatter="comandos" data-sortable="false" data-width="30%">ACCIÓN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-link pull-right" value="Cerrar" onclick="ocultarModalFindAutor()" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _bootGridFindAutor = null;
+    var _onSelectAutor = null;
+
+    function mostrarModalFindAutor(onSelectAutor) {
+        _onSelectAutor = onSelectAutor;
+
+        $(document).ready(function () {
+            $("#FindAutorNombre").val("");
+
+            var divModalFindAutor = $("#divModalFindAutor");
+
+            if (!_bootGridFindAutor)
+                _bootGridFindAutor = $("#tblFindAutor").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='seleccionarElementoBootGridFindAutor(\"" + row.id + "\", \"" + row.nombre_completo + "\")'>" +
+                                    "<span class='fa fa-check'></span> Seleccionar" +
+                                   "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findAutorPorCoincidencia();
+
+            divModalFindAutor.on("shown.bs.modal", function () {
+                $("#FindAutorNombre").val("");
+
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#FindAutorNombre").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalFindAutor.modal("show");
+        });
+    }
+
+    function ocultarModalFindAutor() {
+        _onSelectAutor = null;
+
+        var divModalFindAutor = $("#divModalFindAutor");
+        divModalFindAutor.modal("hide");
+    }
+
+    function seleccionarElementoBootGridFindAutor(id, nombre) {
+        if (_onSelectAutor && typeof (_onSelectAutor) === "function")
+            _onSelectAutor(id, nombre);
+
+        ocultarModalFindAutor();
+    }
+
+    function findAutorPorCoincidencia() {
+        var nombre = $("#FindAutorNombre").val().trim();
+
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Autor/ObtenerPorCoincidencia?nombre=" + (nombre ? encodeURI(nombre) : ""),
+            function (data) {
+                if (data && Array.isArray(data) && data.length > 0)
+                    _bootGridFindAutor.bootgrid("append", data);
+            }, null, function () {
+                if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                    mostrarOverlayLoading(true);
+
+                _bootGridFindAutor.bootgrid("clear");
+            }, null);
+    }
+</script>

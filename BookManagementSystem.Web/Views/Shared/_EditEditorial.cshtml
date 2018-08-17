@@ -1,0 +1,182 @@
+﻿<div id="divModalEditEditorial" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditEditorial()">&times;</button>
+
+                <h4 class="modal-title">Edición de Editorial</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" for="EditEditorialNombre">Editorial *</label>
+
+                            <input type="hidden" id="hiddenEditEditorialId" />
+                            <input type="text" class="form-control input-sm" id="EditEditorialNombre" maxlength="250" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditEditorial" onclick="guardarModalEditEditorial()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditEditorial" onclick="eliminarModalEditEditorial()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _onActionEditEditorial = null;
+
+    function mostrarModalEditEditorial(idEditEditorial, onActionEditEditorial) {
+        _onActionEditEditorial = onActionEditEditorial;
+
+        $(document).ready(function () {
+            $("#hiddenEditEditorialId").val("");
+            $("#EditEditorialNombre").val("");
+            $("#btnEliminarEditEditorial").hide();
+
+            if (idEditEditorial && idEditEditorial > 0)
+                getEditEditorialById(idEditEditorial);
+
+            var divModalEditEditorial = $("#divModalEditEditorial");
+            
+            divModalEditEditorial.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditEditorialNombre").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditEditorial.modal("show");
+        });
+    }
+
+    function ocultarModalEditEditorial() {
+        _onActionEditEditorial = null;
+
+        var divModalEditEditorial = $("#divModalEditEditorial");
+        divModalEditEditorial.off("shown.bs.modal");
+        divModalEditEditorial.modal("hide");
+    }
+    
+    function getEditEditorialById(id) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Editorial/ObtenerPorId?id=" + encodeURI(id),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditEditorialId").val(data.id);
+                    $("#EditEditorialNombre").val(data.nombre);
+
+                    $("#btnEliminarEditEditorial").show();
+
+                    $("#EditEditorialNombre").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditEditorial();
+                    });
+            });
+    }
+
+    function guardarModalEditEditorial() {
+        var editEditorialNombre = $("#EditEditorialNombre").val().trim();
+
+        if (!editEditorialNombre) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el nombre de la Editorial antes de continuar");
+            return;
+        }
+
+        var data = {};
+        data.nombre = editEditorialNombre;
+
+        var editEditorialId = $("#hiddenEditEditorialId").val().trim();
+
+        if (editEditorialId)
+            data.id = parseInt(editEditorialId);
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/Editorial/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditEditorial && typeof (_onActionEditEditorial) === "function")
+                    _onActionEditEditorial();
+
+                ocultarModalEditEditorial();
+            });
+    }
+
+    function eliminarModalEditEditorial() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editEditorialId = $("#hiddenEditEditorialId").val().trim();
+
+            if (editEditorialId) {
+                data.id = parseInt(editEditorialId);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/Editorial/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditEditorial && typeof (_onActionEditEditorial) === "function")
+                            _onActionEditEditorial();
+
+                        ocultarModalEditEditorial();
+                    });
+            }
+        });
+    }
+</script>

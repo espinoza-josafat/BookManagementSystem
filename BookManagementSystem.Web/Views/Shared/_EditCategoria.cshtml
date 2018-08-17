@@ -1,0 +1,182 @@
+﻿<div id="divModalEditCategoria" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditCategoria()">&times;</button>
+
+                <h4 class="modal-title">Edición de Categoría</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" for="EditCategoriaDescripcion">Categoría *</label>
+
+                            <input type="hidden" id="hiddenEditCategoriaId" />
+                            <input type="text" class="form-control input-sm" id="EditCategoriaDescripcion" maxlength="250" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditCategoria" onclick="guardarModalEditCategoria()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditCategoria" onclick="eliminarModalEditCategoria()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _onActionEditCategoria = null;
+
+    function mostrarModalEditCategoria(idEditCategoria, onActionEditCategoria) {
+        _onActionEditCategoria = onActionEditCategoria;
+
+        $(document).ready(function () {
+            $("#hiddenEditCategoriaId").val("");
+            $("#EditCategoriaDescripcion").val("");
+            $("#btnEliminarEditCategoria").hide();
+
+            if (idEditCategoria && idEditCategoria > 0)
+                getEditCategoriaById(idEditCategoria);
+
+            var divModalEditCategoria = $("#divModalEditCategoria");
+
+            divModalEditCategoria.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditCategoriaDescripcion").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditCategoria.modal("show");
+        });
+    }
+
+    function ocultarModalEditCategoria() {
+        _onActionEditCategoria = null;
+
+        var divModalEditCategoria = $("#divModalEditCategoria");
+        divModalEditCategoria.off("shown.bs.modal");
+        divModalEditCategoria.modal("hide");
+    }
+
+    function getEditCategoriaById(id) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Categoria/ObtenerPorId?id=" + encodeURI(id),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditCategoriaId").val(data.id);
+                    $("#EditCategoriaDescripcion").val(data.descripcion);
+
+                    $("#btnEliminarEditCategoria").show();
+
+                    $("#EditCategoriaDescripcion").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditCategoria();
+                    });
+            });
+    }
+
+    function guardarModalEditCategoria() {
+        var editCategoriaDescripcion = $("#EditCategoriaDescripcion").val().trim();
+
+        if (!editCategoriaDescripcion) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer la descripción de la Categoría antes de continuar");
+            return;
+        }
+
+        var data = {};
+        data.descripcion = editCategoriaDescripcion;
+
+        var editCategoriaId = $("#hiddenEditCategoriaId").val().trim();
+
+        if (editCategoriaId)
+            data.id = parseInt(editCategoriaId);
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/Categoria/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditCategoria && typeof (_onActionEditCategoria) === "function")
+                    _onActionEditCategoria();
+
+                ocultarModalEditCategoria();
+            });
+    }
+
+    function eliminarModalEditCategoria() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editCategoriaId = $("#hiddenEditCategoriaId").val().trim();
+
+            if (editCategoriaId) {
+                data.id = parseInt(editCategoriaId);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/Categoria/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditCategoria && typeof (_onActionEditCategoria) === "function")
+                            _onActionEditCategoria();
+
+                        ocultarModalEditCategoria();
+                    });
+            }
+        });
+    }
+</script>

@@ -1,0 +1,676 @@
+﻿@{
+    ViewBag.Title = "Edición de Libros";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <input type="hidden" id="ISBNLibro" value="@(ViewBag.ISBN == null ? "" : ViewBag.ISBN)" />
+                            <input type="hidden" id="Estatus" />
+                            <label class="control-label" for="ISBN">ISBN</label>
+                            <input type="text" class="form-control input-sm" id="ISBN" maxlength="13" onkeypress="soloNumerosKeyPress(event)" autocomplete="off" />
+                        </div>
+
+                        <div class="form-group col-md-8">
+                            <label class="control-label" for="Titulo">Título</label>
+
+                            <input type="text" class="form-control input-sm" id="Titulo" maxlength="1000" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Editorial">Editorial</label>
+
+                            <div class="input-group">
+                                <input type="hidden" id="IdEditorial" />
+
+                                <input type="text" class="form-control input-sm" id="Editorial" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveEditorial" onclick="CleanInputsText(['IdEditorial', 'Editorial'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindEditorial" onclick="showModalFindEditorial()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Autor">Autor</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdAutor" />
+
+                                <input type="text" class="form-control input-sm" id="Autor" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveAutor" onclick="CleanInputsText(['IdAutor', 'Autor'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindAutor" onclick="showModalFindAutor()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Pais">País</label>
+
+                            <select class="form-control input-sm" id="Pais"></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Categoria">Categoría</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdCategoria" />
+
+                                <input type="text" class="form-control input-sm" id="Categoria" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveCategoria" onclick="CleanInputsText(['IdSubSubCategoria', 'SubSubCategoria', 'IdSubCategoria', 'SubCategoria', 'IdCategoria', 'Categoria'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindCategoria" onclick="showModalFindCategoria()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="SubCategoria">Subcategoría</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdSubCategoria" />
+
+                                <input type="text" class="form-control input-sm" id="SubCategoria" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveSubcategoria" onclick="CleanInputsText(['IdSubSubCategoria', 'SubSubCategoria', 'IdSubCategoria', 'SubCategoria'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindSubcategoria" onclick="showModalFindSubCategoria()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="SubSubCategoria">Subsubcategoría</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdSubSubCategoria" />
+
+                                <input type="text" class="form-control input-sm" id="SubSubCategoria" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveSubsubcategoria" onclick="CleanInputsText(['IdSubSubCategoria', 'SubSubCategoria'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindSubsubcategoria" onclick="showModalFindSubSubCategoria()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Tema">Tema</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdTema" />
+
+                                <input type="text" class="form-control input-sm" id="Tema" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveTema" onclick="CleanInputsText(['IdSubSubTema', 'SubSubTema', 'IdSubTema', 'SubTema', 'IdTema', 'Tema'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindTema" onclick="showModalFindTema()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="SubTema">Subtema</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdSubTema" />
+
+                                <input type="text" class="form-control input-sm" id="SubTema" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveSubTema" onclick="CleanInputsText(['IdSubSubTema', 'SubSubTema', 'IdSubTema', 'SubTema'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindSubTema" onclick="showModalFindSubTema()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="SubSubTema">Subsubtema</label>
+                            <div class="input-group">
+                                <input type="hidden" id="IdSubSubTema" />
+
+                                <input type="text" class="form-control input-sm" id="SubSubTema" disabled="disabled" autocomplete="off" />
+
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default input-sm" type="button" id="buttonRemoveSubSubTema" onclick="CleanInputsText(['IdSubSubTema', 'SubSubTema'])">
+                                        <span class="glyphicon glyphicon-remove"></span>
+                                    </button>
+                                    <button class="btn btn-default input-sm" type="button" id="buttonFindSubSubTema" onclick="showModalFindSubSubTema()">
+                                        <span class="glyphicon glyphicon-search"></span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Idioma">Idioma</label>
+
+                            <select class="form-control input-sm" id="Idioma"></select>
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="Anio">Año</label>
+
+                            <input type="text" class="form-control input-sm" id="Anio" maxlength="4" onkeypress="soloNumerosKeyPress(event)" autocomplete="off" />
+                        </div>
+
+                        <div class="form-group col-md-4">
+                            <label class="control-label" for="NumeroEdicion">Número de edición</label>
+
+                            <input type="text" class="form-control input-sm" id="NumeroEdicion" maxlength="3" onkeypress="soloNumerosKeyPress(event)" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-3">
+                            <label class="control-label" for="DiaPublicacion">Fecha publicación</label>
+
+                            <input type="text" class="form-control input-sm" id="FechaPublicacion" />
+                        </div>
+
+                        <div class="form-group col-md-3">
+                            <label class="control-label" for="Paginas">Páginas</label>
+
+                            <input type="text" class="form-control input-sm" id="Paginas" maxlength="3" onkeypress="soloNumerosKeyPress(event)" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-md-12" style="text-align: right; padding-right: 30px;">
+                            <button type="button" class="btn btn-info pull-right" onclick="guardarModalEditLibro()">
+                                <span class="fa fa-save"></span> Guardar
+                            </button>
+                            <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditLibro" onclick="eliminarModalEditLibro()" style="margin-right: 20px;">
+                                <span class="fa fa-minus"></span> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row" id="divEditEjemplares" style="display: none;">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-success">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Edición de Ejemplares</h3>
+                </div>
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label" for="Codigo">Código</label>
+
+                                <input type="text" class="form-control input-md" id="Codigo" maxlength="12" onkeypress="soloNumerosKeyPress(event)" autocomplete="off">
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label" for="EstadoEjemplar">Estado</label>
+
+                                <div class="input-group">
+                                    <select class="form-control input-sm" id="EstadoEjemplar"></select>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-md pull-right" onclick="findEdicionEjemplarPorCoincidencia()">
+                                            <span class="fa fa-search"></span> Buscar
+                                        </button>
+                                    </span>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" onclick="agregarEdicionEjemplar(0)">
+                                            <span class="fa fa-plus"></span> Agregar
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table id="tblEjemplares" class="table table-bordered table-vmiddle">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="codigo" data-type="string" data-width="45%">CÓDIGO</th>
+                                    <th data-column-id="estado_ejemplar" data-type="string" data-width="35%">ESTADO</th>
+                                    <th data-column-id="codigo" data-type="numeric" data-formatter="comandos" data-sortable="false" data-width="20%">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_FindEditorial")
+@Html.Partial("_FindAutor")
+@Html.Partial("_FindCategoria")
+@Html.Partial("_FindSubCategoria")
+@Html.Partial("_FindSubSubCategoria")
+@Html.Partial("_FindTema")
+@Html.Partial("_FindSubTema")
+@Html.Partial("_FindSubSubTema")
+
+@Html.Partial("_EditEjemplar")
+
+@section Scripts {
+    <script src="~/Content/js/moment.js"></script>
+
+    <script src="~/Content/js/plugins/datepicker/bootstrap-datepicker.js"></script>
+    <script src="~/Content/js/plugins/datepicker/bootstrap-datepicker.es.js"></script>
+
+    <script>
+        var _terminoCorrectamenteGetPaises = false;
+        var _terminoCorrectamenteGetIdiomas = false;
+        var _bootGridEdicionEjemplar = null;
+
+        function CleanInputsText(inputs) {
+            if (inputs && Array.isArray(inputs))
+                for (var i = 0; i < inputs.length; i++)
+                    $("#" + inputs[i]).val("");
+        }
+
+        function showModalFindEditorial() {
+            mostrarModalFindEditorial(function (id, nombre) {
+                $("#IdEditorial").val(id);
+                $("#Editorial").val(nombre);
+            });
+        }
+
+        function showModalFindAutor() {
+            mostrarModalFindAutor(function (id, nombre) {
+                $("#IdAutor").val(id);
+                $("#Autor").val(nombre);
+            });
+        }
+
+        function showModalFindCategoria() {
+            mostrarModalFindCategoria(function (id, descripcion) {
+                CleanInputsText(["IdSubSubCategoria", "SubSubCategoria", "IdSubCategoria", "SubCategoria"]);
+
+                $("#IdCategoria").val(id);
+                $("#Categoria").val(descripcion);
+            });
+        }
+
+        function showModalFindSubCategoria() {
+            if ($("#IdCategoria").val())
+                mostrarModalFindSubCategoria(parseInt($("#IdCategoria").val()), function (id, descripcion) {
+                    CleanInputsText(["IdSubSubCategoria", "SubSubCategoria"]);
+
+                    $("#IdSubCategoria").val(id);
+                    $("#SubCategoria").val(descripcion);
+                });
+        }
+
+        function showModalFindSubSubCategoria() {
+            if ($("#IdSubCategoria").val())
+                mostrarModalFindSubSubCategoria(parseInt($("#IdSubCategoria").val()), function (id, descripcion) {
+                    $("#IdSubSubCategoria").val(id);
+                    $("#SubSubCategoria").val(descripcion);
+                });
+        }
+
+        function showModalFindTema() {
+            mostrarModalFindTema(function (id, descripcion) {
+                CleanInputsText(["IdSubSubTema", "SubSubTema", "IdSubTema", "SubTema"]);
+
+                $("#IdTema").val(id);
+                $("#Tema").val(descripcion);
+            });
+        }
+
+        function showModalFindSubTema() {
+            if ($("#IdTema").val())
+                mostrarModalFindSubTema(parseInt($("#IdTema").val()), function (id, descripcion) {
+                    CleanInputsText(["IdSubSubTema", "SubSubTema"]);
+
+                    $("#IdSubTema").val(id);
+                    $("#SubTema").val(descripcion);
+                });
+        }
+
+        function showModalFindSubSubTema() {
+            if ($("#IdSubTema").val())
+                mostrarModalFindSubSubTema(parseInt($("#IdSubTema").val()), function (id, descripcion) {
+                    $("#IdSubSubTema").val(id);
+                    $("#SubSubTema").val(descripcion);
+                });
+        }
+
+        function guardarModalEditLibro() {
+            var data = {};
+
+            var isbn = $("#ISBN").val().trim();
+
+            if (!isbn) {
+                mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el ISBN");
+                return;
+            }
+
+            if (!(isbn.length === 10 || isbn.length === 13)) {
+                mostrarModalMensaje(2, "@ViewBag.Title", "El ISBN no es correcto, debe tener una longitud de 10 o 13");
+                return;
+            }
+
+            data.isbn = parseInt(isbn);
+
+            var titulo = $("#Titulo").val().trim();
+
+            if (!titulo) {
+                mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el título");
+                return;
+            }
+
+            data.titulo = titulo;
+
+            var idEditorial = $("#IdEditorial").val().trim();
+
+            if (!idEditorial) {
+                mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer la editorial");
+                return;
+            }
+
+            data.id_editorial = parseInt(idEditorial);
+
+            var idAutor = $("#IdAutor").val().trim();
+
+            if (!idAutor) {
+                mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el autor");
+                return;
+            }
+
+            data.id_autor = parseInt(idAutor);
+
+            var pais = $("#Pais").val().trim();
+            data.clave_pais = pais ? pais : null;
+
+            var idCategoria = $("#IdCategoria").val().trim();
+            data.id_categoria = idCategoria ? parseInt(idCategoria) : null;
+
+            var idSubCategoria = $("#IdSubCategoria").val().trim();
+            data.id_subcategoria = idSubCategoria ? parseInt(idSubCategoria) : null;
+
+            var idSubSubCategoria = $("#IdSubSubCategoria").val().trim();
+            data.id_subsubcategoria = idSubSubCategoria ? parseInt(idSubSubCategoria) : null;
+
+            var idTema = $("#IdTema").val().trim();
+            data.id_tema = idTema ? parseInt(idTema) : null;
+
+            var idSubTema = $("#IdSubTema").val().trim();
+            data.id_subtema = idSubTema ? parseInt(idSubTema) : null;
+
+            var idSubSubTema = $("#IdSubSubTema").val().trim();
+            data.id_subsubtema = idSubSubTema ? parseInt(idSubSubTema) : null;
+
+            var idioma = $("#Idioma").val().trim();
+            data.id_idioma = idioma ? parseInt(idioma) : null;
+
+            var anio = $("#Anio").val().trim();
+            data.anio = anio ? parseInt(anio) : null;
+
+            var numeroEdicion = $("#NumeroEdicion").val().trim();
+            data.numero_edicion = numeroEdicion ? parseInt(numeroEdicion) : null;
+
+            var fechaPublicacion = $("#FechaPublicacion").val().trim();
+            data.fecha_publicacion = fechaPublicacion ? fechaPublicacion : null;
+
+            var paginas = $("#Paginas").val().trim();
+            data.paginas = paginas ? paginas : null;
+
+            data.edicion = $("#ISBNLibro").val().trim() ? true : false;
+
+            if (data.edicion)
+                data.estatus = parseInt($("#Estatus").val());
+
+            AjaxPostNoCacheJsonAsync(
+                baseUrl + "Api/Libro/Guardar",
+                data,
+                function (result) {
+                    if (result) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                        setControlsEdicion(result);
+                    }
+                });
+        }
+
+        function setControlsEdicion(result) {
+            $("#ISBNLibro").val(result.isbn);
+            $("#Estatus").val(result.estatus);
+            $("#ISBN").attr("disabled", "disabled");
+            $("#btnEliminarEditLibro").show();
+            $("#divEditEjemplares").show();
+        }
+
+        function setFechaPublicacion(sFechaPublicacion) {
+            if (sFechaPublicacion)
+                $("#FechaPublicacion").val(sFechaPublicacion);
+
+            $("#FechaPublicacion").datepicker({
+                autoclose: true,
+                clearBtn: true,
+                format: "dd/mm/yyyy",
+                language: "es"
+            }).attr("readonly", "readonly");
+        }
+
+        function getLibro(isbn) {
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Libro/Consultar?isbn=" + encodeURI(isbn),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        var item = data[0];
+
+                        $("#ISBN").val(item.isbn);
+                        $("#Titulo").val(item.titulo);
+                        $("#IdEditorial").val(item.id_editorial ? item.id_editorial : "");
+                        $("#Editorial").val(item.editorial ? item.editorial : "");
+                        $("#IdAutor").val(item.id_autor ? item.id_autor : "");
+                        $("#Autor").val(item.nombre_autor ? item.nombre_autor : "");
+                        if (item.clave_pais)
+                            $("#Pais").val(item.clave_pais);
+                        $("#IdCategoria").val(item.id_categoria ? item.id_categoria : "");
+                        $("#Categoria").val(item.categoria ? item.categoria : "");
+                        $("#IdSubCategoria").val(item.id_subcategoria ? item.id_subcategoria : "");
+                        $("#SubCategoria").val(item.subcategoria ? item.subcategoria : "");
+                        $("#IdSubSubCategoria").val(item.id_subsubcategoria ? item.id_subsubcategoria : "");
+                        $("#SubSubCategoria").val(item.subsubcategoria ? item.subsubcategoria : "");
+                        $("#IdTema").val(item.id_tema ? item.id_tema : "");
+                        $("#Tema").val(item.tema ? item.tema : "");
+                        $("#IdSubTema").val(item.id_subtema ? item.id_subtema : "");
+                        $("#SubTema").val(item.subtema ? item.subtema : "");
+                        $("#IdSubSubTema").val(item.id_subsubtema ? item.id_subsubtema : "");
+                        $("#SubSubTema").val(item.subsubtema ? item.subsubtema : "");
+                        if (item.id_idioma)
+                            $("#Idioma").val(item.id_idioma);
+                        $("#Anio").val(item.anio ? item.anio : "");
+                        $("#NumeroEdicion").val(item.numero_edicion ? item.numero_edicion : "");
+                        if (item.fecha_publicacion)
+                            setFechaPublicacion(item.fecha_publicacion);
+                        else
+                            setFechaPublicacion();
+                        $("#Paginas").val(item.paginas ? item.paginas : "");
+
+                        setControlsEdicion(item);
+                    }
+                    else {
+                        $("#ISBNLibro").val("");
+
+                        setFechaPublicacion();
+
+                        mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el Libro");
+                    }
+                }, function (data) {
+                    $("#ISBNLibro").val("");
+
+                    setFechaPublicacion();
+
+                    if (data && data.responseJSON && data.responseJSON.message && mostrarModalMensaje && typeof (mostrarModalMensaje) === "function")
+                        mostrarModalMensaje(2, "Book Management System", data.responseJSON.message);
+                });
+        }
+
+        function validarCargaCompletaCatalogos() {
+            var isbnLibro = $("#ISBNLibro").val();
+
+            if (_terminoCorrectamenteGetPaises && _terminoCorrectamenteGetIdiomas && isbnLibro)
+                getLibro(isbnLibro);
+        }
+
+        function agregarEdicionEjemplar(codigo) {
+            mostrarModalEditEjemplar(codigo, parseInt($("#ISBNLibro").val()), function () {
+                findEdicionEjemplarPorCoincidencia();
+            });
+        }
+
+        function findEdicionEjemplarPorCoincidencia() {
+            var codigo = $("#Codigo").val().trim();
+            var idEstadoEjemplar = $("#EstadoEjemplar").val();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Ejemplar/ObtenerPorCoincidencia?codigo=" + (codigo ? encodeURI(codigo) : "") + "&idEstadoEjemplar=" + (idEstadoEjemplar ? encodeURI(idEstadoEjemplar) : ""),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        _bootGridEdicionEjemplar.bootgrid("append", data);
+                }, null, function () {
+                    if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                        mostrarOverlayLoading(true);
+                    
+                    _bootGridEdicionEjemplar.bootgrid("clear");
+                }, null);
+        }
+
+        function eliminarModalEditLibro() {
+            mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+                var data = {};
+
+                var isbnLibro = $("#ISBNLibro").val();
+
+                if (isbnLibro) {
+                    data.isbn = parseInt(isbnLibro);
+
+                    AjaxPostNoCacheJsonAsync(
+                        baseUrl + "Api/Libro/Eliminar",
+                        data,
+                        function (data) {
+                            mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente", function () {
+                                var url = "@Url.Action("Consulta", "Libro")";
+                                window.location.href = url;
+                            });
+                        });
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            $("#Pais, #Idioma").append("<option value=''>-- Sin especificar --</option>");
+            $("#EstadoEjemplar").append("<option value=''>-- Cualquiera --</option>");
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Pais/Obtener",
+                function (data) {
+                    _terminoCorrectamenteGetPaises = true;
+
+                    if (data && Array.isArray(data) && data.length > 0)
+                        $.each(data, function (index, item) {
+                            $("#Pais").append("<option value='" + item.clave + "'>" + item.nombre + "</option>");
+                        });
+
+                    validarCargaCompletaCatalogos();
+                }, function (data) { }, function () { }, function () { });
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Idioma/Obtener",
+                function (data) {
+                    _terminoCorrectamenteGetIdiomas = true;
+
+                    if (data && Array.isArray(data) && data.length > 0)
+                        $.each(data, function (index, item) {
+                            $("#Idioma").append("<option value='" + item.id + "'>" + item.descripcion + "</option>");
+                        });
+
+                    validarCargaCompletaCatalogos();
+                }, function (data) { }, function () { }, function () { });
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/EstadoEjemplar/Obtener",
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        $.each(data, function (index, item) {
+                            $("#EstadoEjemplar").append("<option value='" + item.id + "'>" + item.descripcion + "</option>");
+                        });
+                }, function (data) { }, function () { }, function () { });
+
+            if (!_bootGridEdicionEjemplar)
+                _bootGridEdicionEjemplar = $("#tblEjemplares").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='agregarEdicionEjemplar(" + row.codigo + ")'>" +
+                                "<span class='fa fa-pencil'></span> Modificar" +
+                                "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            if (!$("#ISBNLibro").val()) {
+                setFechaPublicacion();
+
+                $("#btnEliminarEditLibro").hide();
+            }
+        });
+    </script>
+}

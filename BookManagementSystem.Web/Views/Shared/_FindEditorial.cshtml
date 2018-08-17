@@ -1,0 +1,169 @@
+﻿<div id="divModalFindEditorial" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalFindEditorial()">&times;</button>
+
+                <h4 class="modal-title">Búsqueda de Editorial</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="FindEditorialNombre">Editorial</label>
+
+                            <div class="input-group">
+                                <input type="text" class="form-control input-md" id="FindEditorialNombre" autocomplete="off">
+
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-md pull-right" onclick="findEditorialPorCoincidencia()">
+                                        <span class="fa fa-search"></span> Buscar
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table id="tblFindEditorial" class="table table-bordered table-vmiddle">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="nombre" data-type="string" data-width="70%">NOMBRE</th>
+                                        <th data-column-id="id" data-type="numeric" data-formatter="comandos" data-sortable="false" data-width="30%">ACCIÓN</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-link pull-right" value="Cerrar" onclick="ocultarModalFindEditorial()" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _bootGridFindEditorial = null;
+    var _onSelectEditorial = null;
+    
+    function mostrarModalFindEditorial(onSelectEditorial) {
+        _onSelectEditorial = onSelectEditorial;
+
+        $(document).ready(function () {
+            $("#FindEditorialNombre").val("");
+
+            var divModalFindEditorial = $("#divModalFindEditorial");
+
+            if (!_bootGridFindEditorial)
+                _bootGridFindEditorial = $("#tblFindEditorial").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='seleccionarElementoBootGridFindEditorial(\"" + row.id + "\", \"" + row.nombre + "\")'>" +
+                                    "<span class='fa fa-check'></span> Seleccionar" +
+                                   "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findEditorialPorCoincidencia();
+
+            divModalFindEditorial.on("shown.bs.modal", function () {
+                $("#FindEditorialNombre").val("");
+
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#FindEditorialNombre").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+            
+            divModalFindEditorial.modal("show");
+        });
+    }
+
+    function ocultarModalFindEditorial() {
+        _onSelectEditorial = null;
+
+        var divModalFindEditorial = $("#divModalFindEditorial");
+        divModalFindEditorial.modal("hide");
+    }
+
+    function seleccionarElementoBootGridFindEditorial(id, nombre) {
+        if (_onSelectEditorial && typeof (_onSelectEditorial) === "function")
+            _onSelectEditorial(id, nombre);
+
+        ocultarModalFindEditorial();
+    }
+
+    function findEditorialPorCoincidencia() {
+        var nombre = $("#FindEditorialNombre").val().trim();
+
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Editorial/ObtenerPorCoincidencia?nombre=" + (nombre ? encodeURI(nombre) : ""),
+            function (data) {
+                if (data && Array.isArray(data) && data.length > 0)
+                    _bootGridFindEditorial.bootgrid("append", data);
+            }, null, function () {
+                if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                    mostrarOverlayLoading(true);
+
+                _bootGridFindEditorial.bootgrid("clear");
+            }, null);
+    }
+</script>

@@ -1,0 +1,371 @@
+﻿@{
+    ViewBag.Title = "Edición de Usuarios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <label class="control-label" for="EdicionUsuarioNombre">Nombre</label>
+
+                                <input type="text" class="form-control input-md" id="EdicionUsuarioNombre" maxlength="150" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label" for="EdicionTipoUsuario">Tipo de usuario</label>
+
+                                <div class="input-group">
+                                    <select type="text" class="form-control input-md" id="EdicionTipoUsuario"></select>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-md pull-right" onclick="findEdicionUsuarioPorCoincidencia()">
+                                            <span class="fa fa-search"></span> Buscar
+                                        </button>
+                                    </span>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" onclick="agregarEdicionUsuario(0)">
+                                            <span class="fa fa-plus"></span> Agregar
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-success">
+                <div class="box-body table-responsive no-padding">
+                    <div class="table-responsive">
+                        <table id="tblEdicionUsuario" class="table table-bordered table-vmiddle">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="nombre_completo" data-type="string" data-width="55%">NOMBRE</th>
+                                    <th data-column-id="tipo_usuario" data-type="string" data-width="25%">NOMBRE</th>
+                                    <th data-column-id="id" data-type="numeric" data-formatter="comandos" data-sortable="false" data-width="20%">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div id="divModalEditUsuario" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditUsuario()">&times;</button>
+
+                <h4 class="modal-title">Edición de Usuario</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioNombre">Nombre *</label>
+
+                            <input type="hidden" id="hiddenEditUsuarioId" />
+                            <input type="text" class="form-control input-sm" id="EditUsuarioNombre" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioApellidoPaterno">Apellido paterno *</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioApellidoPaterno" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioApellidoMaterno">Apellido materno</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioApellidoMaterno" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioEstado">Estado</label>
+
+                            <select class="form-control input-sm" id="EditUsuarioEstado" onchange="Estado_OnChange()"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioMunicipio">Municipio</label>
+
+                            <select class="form-control input-sm" id="EditUsuarioMunicipio" onchange="Municipio_OnChange()"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioCodigoPostal">Código postal</label>
+
+                            <select class="form-control input-sm" id="EditUsuarioCodigoPostal" onchange="CodigoPostal_OnChange()"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioAsentamiento">Asentamiento</label>
+
+                            <select class="form-control input-sm" id="EditUsuarioAsentamiento"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioNoExterior">Número exterior</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioNoExterior" maxlength="15" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioNoInterior">Número interior</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioNoInterior" maxlength="15" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioCalle">Calle</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioCalle" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioReferencia">Referencia</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioReferencia" maxlength="500" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioNacimiento">Fecha de nacimiento</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioNacimiento" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioTelefono">Teléfono</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioTelefono" maxlength="10" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioCorreoElectronico">E-mail</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioCorreoElectronico" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioTipoUsuario">Tipo de usuario</label>
+
+                            <select class="form-control input-sm" id="EditUsuarioTipoUsuario"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioUsername">Username</label>
+
+                            <input type="text" class="form-control input-sm" id="EditUsuarioUsername" maxlength="50" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditUsuarioPassword">Password</label>
+
+                            <input type="password" class="form-control input-sm" id="EditUsuarioPassword" maxlength="25" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditUsuario" onclick="guardarModalEditUsuario()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditUsuario" onclick="eliminarModalEditUsuario()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+@section Scripts{
+    <script>
+        var _bootGridEdicionUsuario = null;
+
+        function findEdicionUsuarioPorCoincidencia() {
+            var nombre = $("#EdicionUsuarioNombre").val().trim();
+            var tipoUsuario = $("#EdicionTipoUsuario").val();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Usuario/ObtenerPorCoincidencia?nombre=" + (nombre ? encodeURI(nombre) : "") + "&idTipoUsuario=" + (tipoUsuario ? encodeURI(tipoUsuario) : ""),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        _bootGridEdicionUsuario.bootgrid("append", data);
+                }, null, function () {
+                    if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                        mostrarOverlayLoading(true);
+
+                    _bootGridEdicionUsuario.bootgrid("clear");
+                }, null);
+        }
+
+        function agregarEdicionUsuario(id) {
+            mostrarModalEditUsuario(id, function () {
+                findEdicionUsuarioPorCoincidencia();
+            });
+        }
+
+        $(document).ready(function () {
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/TipoUsuario/Obtener",
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        $.each(data, function (index, item) {
+                            $("#EdicionTipoUsuario").append("<option value='" + item.id + "'>" + item.descripcion + "</option>");
+                            $("#EditUsuarioTipoUsuario").append("<option value='" + item.id + "'>" + item.descripcion + "</option>");
+                        });
+                }, function (data) { }, function () { }, function () { });
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Estado/Obtener",
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        $.each(data, function (index, item) {
+                            $("#EditUsuarioEstado").append("<option value='" + item.id + "'>" + item.nombre + "</option>");
+                        });
+
+                        $("#EditUsuarioEstado").change();
+                    }
+                }, function (data) { }, function () { }, function () { });
+
+            $("#EditUsuarioNacimiento").datepicker({
+                autoclose: true,
+                clearBtn: true,
+                format: "dd/mm/yyyy",
+                language: "es"
+            }).attr("readonly", "readonly");
+
+            if (!_bootGridEdicionUsuario)
+                _bootGridEdicionUsuario = $("#tblEdicionUsuario").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='agregarEdicionUsuario(" + row.id + ")'>" +
+                                "<span class='fa fa-pencil'></span> Modificar" +
+                                "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findEdicionUsuarioPorCoincidencia();
+        });
+
+        function Estado_OnChange() {
+            var idEstado = $("#EditUsuarioEstado").val();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Municipio/ObtenerPorIdEstado?idEstado=" + encodeURI(idEstado),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        $.each(data, function (index, item) {
+                            $("#EditUsuarioEstado").append("<option value='" + item.id + "'>" + item.nombre + "</option>");
+                        });
+
+                        $("#EditUsuarioEstado").change();
+                    }
+                }, function (data) { }, function () {
+                    $("#EditUsuarioMunicipio").empty();
+                    $("#EditUsuarioCodigoPostal").empty();
+                    $("#EditUsuarioAsentamiento").empty();
+                }, function () { });
+        }
+
+        function Municipio_OnChange() {
+            var idMunicipio = $("#EditUsuarioMunicipio").val();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/CodigoPostal/ObtenerPorIdMunicipio?idMunicipio=" + encodeURI(idMunicipio),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0) {
+                        $.each(data, function (index, item) {
+                            $("#EditUsuarioCodigoPostal").append("<option value='" + item.codigo + "'>" + item.codigo + "</option>");
+                        });
+
+                        $("#EditUsuarioCodigoPostal").change();
+                    }
+                }, function (data) { }, function () {
+                    $("#EditUsuarioCodigoPostal").empty();
+                    $("#EditUsuarioAsentamiento").empty();
+                }, function () { });
+        }
+
+        function CodigoPostal_OnChange() {
+            var codigoPostal = $("#EditUsuarioCodigoPostal").val();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Asentamiento/ObtenerPorCodigo?codigo=" + encodeURI(codigoPostal),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        $.each(data, function (index, item) {
+                            $("#EditUsuarioAsentamiento").append("<option value='" + item.id + "'>" + item.nombre + "</option>");
+                        });
+                }, function (data) { }, function () {
+                    $("#EditUsuarioAsentamiento").empty();
+                }, function () { });
+        }
+    </script>
+}

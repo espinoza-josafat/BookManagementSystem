@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "Edición de Categorías";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label class="control-label" for="EdicionCategoriaDescripcion">Categoría</label>
+
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-md" id="EdicionCategoriaDescripcion" maxlength="250" autocomplete="off">
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-md pull-right" onclick="findEdicionCategoriaPorCoincidencia()">
+                                            <span class="fa fa-search"></span> Buscar
+                                        </button>
+                                    </span>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" onclick="agregarEdicionCategoria(0)">
+                                            <span class="fa fa-plus"></span> Agregar
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-success">
+                <div class="box-body table-responsive no-padding">
+                    <div class="table-responsive">
+                        <table id="tblEdicionCategoria" class="table table-bordered table-vmiddle">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="descripcion" data-type="string" data-width="80%">DESCRIPCIÓN</th>
+                                    <th data-column-id="id" data-type="numeric" data-formatter="comandos" data-sortable="false" data-width="20%">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_EditCategoria")
+
+@section Scripts{
+    <script>
+        var _bootGridEdicionCategoria = null;
+
+        function findEdicionCategoriaPorCoincidencia() {
+            var descripcion = $("#EdicionCategoriaDescripcion").val().trim();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Categoria/ObtenerPorCoincidencia?descripcion=" + (descripcion ? encodeURI(descripcion) : ""),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        _bootGridEdicionCategoria.bootgrid("append", data);
+                }, null, function () {
+                    if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                        mostrarOverlayLoading(true);
+
+                    _bootGridEdicionCategoria.bootgrid("clear");
+                }, null);
+        }
+
+        function agregarEdicionCategoria(id) {
+            mostrarModalEditCategoria(id, function () {
+                findEdicionCategoriaPorCoincidencia();
+            });
+        }
+
+        $(document).ready(function () {
+            var divModalEdicionCategoria = $("#divModalEdicionCategoria");
+
+            if (!_bootGridEdicionCategoria)
+                _bootGridEdicionCategoria = $("#tblEdicionCategoria").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='agregarEdicionCategoria(" + row.id + ")'>" +
+                                "<span class='fa fa-pencil'></span> Modificar" +
+                                "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findEdicionCategoriaPorCoincidencia();
+        });
+    </script>
+}

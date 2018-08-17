@@ -1,0 +1,152 @@
+﻿
+
+<script>
+    var _onActionEditUsuario = null;
+
+    function mostrarModalEditUsuario(idEditUsuario, onActionEditUsuario) {
+        _onActionEditUsuario = onActionEditUsuario;
+
+        $(document).ready(function () {
+            $("#hiddenEditUsuarioId").val("");
+            $("#EditUsuarioNombre").val("");
+            $("#btnEliminarEditUsuario").hide();
+
+            if (idEditUsuario && idEditUsuario > 0)
+                getEditUsuarioById(idEditUsuario);
+
+            var divModalEditUsuario = $("#divModalEditUsuario");
+
+            divModalEditUsuario.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditUsuarioNombre").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditUsuario.modal("show");
+        });
+    }
+
+    function ocultarModalEditUsuario() {
+        _onActionEditUsuario = null;
+
+        var divModalEditUsuario = $("#divModalEditUsuario");
+        divModalEditUsuario.off("shown.bs.modal");
+        divModalEditUsuario.modal("hide");
+    }
+
+    function getEditUsuarioById(id) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Usuario/ObtenerPorId?id=" + encodeURI(id),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditUsuarioId").val(data.id);
+                    $("#EditUsuarioNombre").val(data.nombre);
+
+                    $("#btnEliminarEditUsuario").show();
+
+                    $("#EditUsuarioNombre").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditUsuario();
+                    });
+            });
+    }
+
+    function guardarModalEditUsuario() {
+        var editUsuarioNombre = $("#EditUsuarioNombre").val().trim();
+
+        if (!editUsuarioNombre) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el nombre antes de continuar");
+            return;
+        }
+
+        var data = {};
+        data.nombre = editUsuarioNombre;
+
+        var editUsuarioId = $("#hiddenEditUsuarioId").val().trim();
+
+        if (editUsuarioId)
+            data.id = parseInt(editUsuarioId);
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/Usuario/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditUsuario && typeof (_onActionEditUsuario) === "function")
+                    _onActionEditUsuario();
+
+                ocultarModalEditUsuario();
+            });
+    }
+
+    function eliminarModalEditUsuario() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estás seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editUsuarioId = $("#hiddenEditUsuarioId").val().trim();
+
+            if (editUsuarioId) {
+                data.id = parseInt(editUsuarioId);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/Usuario/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditUsuario && typeof (_onActionEditUsuario) === "function")
+                            _onActionEditUsuario();
+
+                        ocultarModalEditUsuario();
+                    });
+            }
+        });
+    }
+</script>

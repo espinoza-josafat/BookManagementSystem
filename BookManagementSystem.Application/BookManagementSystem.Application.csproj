@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A3AEE49C-1FE2-4C43-9E41-E925DCB038A6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BookManagementSystem.Application</RootNamespace>
+    <AssemblyName>BookManagementSystem.Application</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AsentamientoService.cs" />
+    <Compile Include="Services\AutorService.cs" />
+    <Compile Include="Services\CategoriaService.cs" />
+    <Compile Include="Services\CodigoPostalService.cs" />
+    <Compile Include="Services\DetallePrestamoService.cs" />
+    <Compile Include="Services\EditorialService.cs" />
+    <Compile Include="Services\EjemplarService.cs" />
+    <Compile Include="Services\EstadoEjemplarService.cs" />
+    <Compile Include="Services\EstadoService.cs" />
+    <Compile Include="Services\IdiomaService.cs" />
+    <Compile Include="Services\LibroService.cs" />
+    <Compile Include="Services\MunicipioService.cs" />
+    <Compile Include="Services\PaisService.cs" />
+    <Compile Include="Services\PrestamoService.cs" />
+    <Compile Include="Services\SubCategoriaService.cs" />
+    <Compile Include="Services\SubSubCategoriaService.cs" />
+    <Compile Include="Services\SubSubTemaService.cs" />
+    <Compile Include="Services\SubTemaService.cs" />
+    <Compile Include="Services\TemaService.cs" />
+    <Compile Include="Services\TipoUsuarioService.cs" />
+    <Compile Include="Services\ProcesamientoTransformService.cs" />
+    <Compile Include="Services\UsuarioService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BookManagementSystem.Domain\BookManagementSystem.Domain.csproj">
+      <Project>{e88d3dc7-9b5f-463e-9399-6d4a32b4a129}</Project>
+      <Name>BookManagementSystem.Domain</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BookManagementSystem.Entities\BookManagementSystem.Entities.csproj">
+      <Project>{85812e45-91d0-45c9-a3c4-abef9ab0c0a0}</Project>
+      <Name>BookManagementSystem.Entities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

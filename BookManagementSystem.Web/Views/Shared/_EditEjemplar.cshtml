@@ -1,0 +1,237 @@
+﻿<div id="divModalEditEjemplar" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditEjemplar()">&times;</button>
+
+                <h4 class="modal-title">Edición de Ejemplar</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label" for="EditEjemplarCodigo">Código *</label>
+
+                            <input type="hidden" id="hiddenEditEjemplarISBN" />
+                            <input type="hidden" id="hiddenEditEjemplarEdicion" />
+                            <input type="hidden" id="hiddenEditEjemplarEstatus" />
+                            <input type="text" class="form-control input-sm" id="EditEjemplarCodigo" maxlength="12" onkeypress="soloNumerosKeyPress(event)" autocomplete="off" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label" for="EditEjemplarEstadoEjemplar">Estado del ejemplar</label>
+
+                            <select class="form-control input-sm" id="EditEjemplarEstadoEjemplar"></select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label class="control-label" for="EditEjemplarComentario">Comentario</label>
+
+                            <input type="text" class="form-control input-sm" id="EditEjemplarComentario" maxlength="1000" autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditEjemplar" onclick="guardarModalEditEjemplar()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditEjemplar" onclick="eliminarModalEditEjemplar()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _onActionEditEjemplar = null;
+
+    function mostrarModalEditEjemplar(codigo, isbn, onActionEditEjemplar) {
+        _onActionEditEjemplar = onActionEditEjemplar;
+
+        $(document).ready(function () {
+            $("#hiddenEditEjemplarISBN").val(isbn);
+            $("#hiddenEditEjemplarEdicion").val("false");
+            $("#hiddenEditEjemplarEstatus").val("");
+            $("#EditEjemplarCodigo").val("");
+            $("#EditEjemplarCodigo").removeAttr("disabled");
+            $("#EditEjemplarComentario").val("");
+            $("#btnEliminarEditEjemplar").hide();
+
+            if ($("#EditEjemplarEstadoEjemplar option").length === 0) {
+                AjaxGetNoCacheJsonAsync(
+                    baseUrl + "Api/EstadoEjemplar/Obtener",
+                    function (data) {
+                        if (data && Array.isArray(data) && data.length > 0) {
+                            $.each(data, function (index, item) {
+                                $("#EditEjemplarEstadoEjemplar").append("<option value='" + item.id + "'>" + item.descripcion + "</option>");
+                            });
+
+                            if (codigo && codigo > 0)
+                                getEditEjemplarByCodigo(codigo);
+                        }
+                    }, function (data) { }, function () { }, function () { });
+            }
+            else {
+                $("#EditEjemplarEstadoEjemplar").val("1");
+
+                if (codigo && codigo > 0)
+                    getEditEjemplarByCodigo(codigo);
+            }
+            
+            var divModalEditEjemplar = $("#divModalEditEjemplar");
+
+            divModalEditEjemplar.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditEjemplarCodigo").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditEjemplar.modal("show");
+        });
+    }
+
+    function ocultarModalEditEjemplar() {
+        _onActionEditEjemplar = null;
+
+        var divModalEditEjemplar = $("#divModalEditEjemplar");
+        divModalEditEjemplar.off("shown.bs.modal");
+        divModalEditEjemplar.modal("hide");
+    }
+
+    function getEditEjemplarByCodigo(codigo) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Ejemplar/ObtenerPorCodigo?codigo=" + encodeURI(codigo),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditEjemplarEdicion").val("true");
+                    $("#hiddenEditEjemplarEstatus").val(data.estatus)
+                    $("#EditEjemplarCodigo").val(data.codigo);
+                    $("#EditEjemplarEstadoEjemplar").val(data.id_estado_ejemplar);
+                    $("#EditEjemplarComentario").val(data.comentario ? data.comentario : "");
+
+                    $("#EditEjemplarCodigo").attr("disabled", "disabled");
+
+                    $("#btnEliminarEditEjemplar").show();
+
+                    $("#EditEjemplarComentario").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditEjemplar();
+                    });
+            });
+    }
+
+    function guardarModalEditEjemplar() {
+        var editEjemplarCodigo = $("#EditEjemplarCodigo").val().trim();
+
+        if (!editEjemplarCodigo) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el código del ejemplar antes de continuar");
+            return;
+        }
+
+        var editEjemplarEstadoEjemplar = $("#EditEjemplarEstadoEjemplar").val();
+
+        if (!editEjemplarEstadoEjemplar) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer el estado del ejemplar antes de continuar");
+            return;
+        }
+
+        var editEjemplarComentario = $("#EditEjemplarComentario").val().trim();
+
+        var data = {};
+        data.codigo = parseInt(editEjemplarCodigo);
+        data.isbn = parseInt($("#hiddenEditEjemplarISBN").val());
+        data.id_estado_ejemplar = parseInt(editEjemplarEstadoEjemplar);
+        data.comentario = editEjemplarComentario ? editEjemplarComentario : null;
+        data.edicion = $("#hiddenEditEjemplarEdicion").val() === "true";
+        if (data.edicion)
+            data.estatus = parseInt($("#hiddenEditEjemplarEstatus").val());
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/Ejemplar/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditEjemplar && typeof (_onActionEditEjemplar) === "function")
+                    _onActionEditEjemplar();
+
+                ocultarModalEditEjemplar();
+            });
+    }
+
+    function eliminarModalEditEjemplar() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editEjemplarCodigo = $("#EditEjemplarCodigo").val();
+
+            if (editEjemplarCodigo) {
+                data.codigo = parseInt(editEjemplarCodigo);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/Ejemplar/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditEjemplar && typeof (_onActionEditEjemplar) === "function")
+                            _onActionEditEjemplar();
+
+                        ocultarModalEditEjemplar();
+                    });
+            }
+        });
+    }
+</script>

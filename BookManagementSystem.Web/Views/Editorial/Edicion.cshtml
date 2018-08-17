@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "Edición de Editoriales";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-info">
+                <div class="box-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="form-group">
+                                <label class="control-label" for="EdicionEditorialNombre">Editorial</label>
+
+                                <div class="input-group">
+                                    <input type="text" class="form-control input-md" id="EdicionEditorialNombre" maxlength="250" autocomplete="off">
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-primary btn-md pull-right" onclick="findEdicionEditorialPorCoincidencia()">
+                                            <span class="fa fa-search"></span> Buscar
+                                        </button>
+                                    </span>
+
+                                    <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" onclick="agregarEdicionEditorial(0)">
+                                            <span class="fa fa-plus"></span> Agregar
+                                        </button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="col-md-12">
+            <div class="box box-success">
+                <div class="box-body table-responsive no-padding">
+                    <div class="table-responsive">
+                        <table id="tblEdicionEditorial" class="table table-bordered table-vmiddle">
+                            <thead>
+                                <tr>
+                                    <th data-column-id="nombre" data-type="string" data-width="80%">NOMBRE</th>
+                                    <th data-column-id="id" data-type="numeric" data-formatter="comandos" data-sortable="false" data-width="20%">ACCIÓN</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@Html.Partial("_EditEditorial")
+
+@section Scripts{
+    <script>
+        var _bootGridEdicionEditorial = null;
+
+        function findEdicionEditorialPorCoincidencia() {
+            var nombre = $("#EdicionEditorialNombre").val().trim();
+
+            AjaxGetNoCacheJsonAsync(
+                baseUrl + "Api/Editorial/ObtenerPorCoincidencia?nombre=" + (nombre ? encodeURI(nombre) : ""),
+                function (data) {
+                    if (data && Array.isArray(data) && data.length > 0)
+                        _bootGridEdicionEditorial.bootgrid("append", data);
+                }, null, function () {
+                    if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                        mostrarOverlayLoading(true);
+
+                    _bootGridEdicionEditorial.bootgrid("clear");
+                }, null);
+        }
+
+        function agregarEdicionEditorial(id) {
+            mostrarModalEditEditorial(id, function () {
+                findEdicionEditorialPorCoincidencia();
+            });
+        }
+
+        $(document).ready(function () {
+            var divModalEdicionEditorial = $("#divModalEdicionEditorial");
+
+            if (!_bootGridEdicionEditorial)
+                _bootGridEdicionEditorial = $("#tblEdicionEditorial").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='agregarEdicionEditorial(" + row.id + ")'>" +
+                                "<span class='fa fa-pencil'></span> Modificar" +
+                                "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findEdicionEditorialPorCoincidencia();
+        });
+    </script>
+}

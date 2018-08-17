@@ -1,0 +1,186 @@
+﻿<div id="divModalEditSubTema" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditSubTema()">&times;</button>
+
+                <h4 class="modal-title">Edición de Subtema</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" for="EditSubTemaDescripcion">Subtema *</label>
+
+                            <input type="hidden" id="hiddenEditTemaId" />
+                            <input type="hidden" id="hiddenEditSubTemaId" />
+                            <input type="text" class="form-control input-sm" id="EditSubTemaDescripcion" maxlength="250" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditSubTema" onclick="guardarModalEditSubTema()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditSubTema" onclick="eliminarModalEditSubTema()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _onActionEditSubTema = null;
+
+    function mostrarModalEditSubTema(idTemaEditSubTema, idEditSubTema, onActionEditSubTema) {
+        _onActionEditSubTema = onActionEditSubTema;
+
+        $(document).ready(function () {
+            $("#hiddenEditSubTemaId").val("");
+            $("#hiddenEditTemaId").val(idTemaEditSubTema);
+            $("#EditSubTemaDescripcion").val("");
+            $("#btnEliminarEditSubTema").hide();
+
+            if (idEditSubTema && idEditSubTema > 0)
+                getEditSubTemaById(idEditSubTema);
+
+            var divModalEditSubTema = $("#divModalEditSubTema");
+
+            divModalEditSubTema.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditSubTemaDescripcion").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditSubTema.modal("show");
+        });
+    }
+
+    function ocultarModalEditSubTema() {
+        _onActionEditSubTema = null;
+
+        var divModalEditSubTema = $("#divModalEditSubTema");
+        divModalEditSubTema.off("shown.bs.modal");
+        divModalEditSubTema.modal("hide");
+    }
+
+    function getEditSubTemaById(id) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/SubTema/ObtenerPorId?id=" + encodeURI(id),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditSubTemaId").val(data.id);
+                    $("#hiddenEditTemaId").val(data.id_tema);
+                    $("#EditSubTemaDescripcion").val(data.descripcion);
+
+                    $("#btnEliminarEditSubTema").show();
+
+                    $("#EditSubTemaDescripcion").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditSubTema();
+                    });
+            });
+    }
+
+    function guardarModalEditSubTema() {
+        var editSubTemaDescripcion = $("#EditSubTemaDescripcion").val().trim();
+
+        if (!editSubTemaDescripcion) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer la descripción de la Subtema antes de continuar");
+            return;
+        }
+
+        var data = {};
+        data.id_tema = parseInt($("#hiddenEditTemaId").val());
+        data.descripcion = editSubTemaDescripcion;
+
+        var editSubTemaId = $("#hiddenEditSubTemaId").val().trim();
+
+        if (editSubTemaId)
+            data.id = parseInt(editSubTemaId);
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/SubTema/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditSubTema && typeof (_onActionEditSubTema) === "function")
+                    _onActionEditSubTema();
+
+                ocultarModalEditSubTema();
+            });
+    }
+
+    function eliminarModalEditSubTema() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editSubTemaId = $("#hiddenEditSubTemaId").val().trim();
+
+            if (editSubTemaId) {
+                data.id = parseInt(editSubTemaId);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/SubTema/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditSubTema && typeof (_onActionEditSubTema) === "function")
+                            _onActionEditSubTema();
+
+                        ocultarModalEditSubTema();
+                    });
+            }
+        });
+    }
+</script>

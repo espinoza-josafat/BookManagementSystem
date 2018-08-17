@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{428239D4-BD1C-4AC0-AB2D-EE4E25E05C8B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BookManagementSystem.Business</RootNamespace>
+    <AssemblyName>BookManagementSystem.Business</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AutorBL.cs" />
+    <Compile Include="CategoriaBL.cs" />
+    <Compile Include="EditorialBL.cs" />
+    <Compile Include="LibroBL.cs" />
+    <Compile Include="ProcesamientoOcrTransferBL.cs" />
+    <Compile Include="Process\ProcesoAutenticarUsuario.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SubCategoriaBL.cs" />
+    <Compile Include="SubSubCategoriaBL.cs" />
+    <Compile Include="SubSubTemaBL.cs" />
+    <Compile Include="SubTemaBL.cs" />
+    <Compile Include="TemaBL.cs" />
+    <Compile Include="View\VWEjemplarBL.cs" />
+    <Compile Include="View\VWLibroBL.cs" />
+    <Compile Include="View\VWUsuarioBL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BookManagementSystem.Data\BookManagementSystem.Data.csproj">
+      <Project>{ca5af6cb-678b-4029-b000-d7e981d9b013}</Project>
+      <Name>BookManagementSystem.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BookManagementSystem.Entities\BookManagementSystem.Entities.csproj">
+      <Project>{85812e45-91d0-45c9-a3c4-abef9ab0c0a0}</Project>
+      <Name>BookManagementSystem.Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BookManagementSystem.Tools\BookManagementSystem.Tools.csproj">
+      <Project>{b1656411-21ad-4f79-9bee-3db511c5fe64}</Project>
+      <Name>BookManagementSystem.Tools</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

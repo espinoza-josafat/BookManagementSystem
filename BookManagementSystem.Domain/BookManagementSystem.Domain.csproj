@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E88D3DC7-9B5F-463E-9399-6D4A32B4A129}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BookManagementSystem.Domain</RootNamespace>
+    <AssemblyName>BookManagementSystem.Domain</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\IAsentamientoRepository.cs" />
+    <Compile Include="Repositories\ICategoriaRepository.cs" />
+    <Compile Include="Repositories\IAutorRepository.cs" />
+    <Compile Include="Repositories\ICodigoPostalRepository.cs" />
+    <Compile Include="Repositories\IDetallePrestamoRepository.cs" />
+    <Compile Include="Repositories\IEstadoRepository.cs" />
+    <Compile Include="Repositories\IIdiomaRepository.cs" />
+    <Compile Include="Repositories\IEditorialRepository.cs" />
+    <Compile Include="Repositories\IEjemplarRepository.cs" />
+    <Compile Include="Repositories\IEstadoEjemplarRepository.cs" />
+    <Compile Include="Repositories\ILibroRepository.cs" />
+    <Compile Include="Repositories\IMunicipioRepository.cs" />
+    <Compile Include="Repositories\IPaisRepository.cs" />
+    <Compile Include="Repositories\IPrestamoRepository.cs" />
+    <Compile Include="Repositories\IProcesamientoTransformRepository.cs" />
+    <Compile Include="Repositories\Common\IRepository.cs" />
+    <Compile Include="Repositories\ISubCategoriaRepository.cs" />
+    <Compile Include="Repositories\ISubSubCategoriaRepository.cs" />
+    <Compile Include="Repositories\ISubSubTemaRepository.cs" />
+    <Compile Include="Repositories\ISubTemaRepository.cs" />
+    <Compile Include="Repositories\ITemaRepository.cs" />
+    <Compile Include="Repositories\ITipoUsuarioRepository.cs" />
+    <Compile Include="Repositories\IUsuarioRepository.cs" />
+    <Compile Include="Services\Common\EntityService.cs" />
+    <Compile Include="Services\Common\IEntityService.cs" />
+    <Compile Include="Services\Common\IService.cs" />
+    <Compile Include="Services\IAsentamientoService.cs" />
+    <Compile Include="Services\IAutorService.cs" />
+    <Compile Include="Services\ICategoriaService.cs" />
+    <Compile Include="Services\ICodigoPostalService.cs" />
+    <Compile Include="Services\IDetallePrestamoService.cs" />
+    <Compile Include="Services\IEditorialService.cs" />
+    <Compile Include="Services\IEjemplarService.cs" />
+    <Compile Include="Services\IEstadoEjemplarService.cs" />
+    <Compile Include="Services\IEstadoService.cs" />
+    <Compile Include="Services\IIdiomaService.cs" />
+    <Compile Include="Services\ILibroService.cs" />
+    <Compile Include="Services\IMunicipioService.cs" />
+    <Compile Include="Services\IPaisService.cs" />
+    <Compile Include="Services\IPrestamoService.cs" />
+    <Compile Include="Services\IProcesamientoTransformService.cs" />
+    <Compile Include="Services\ISubCategoriaService.cs" />
+    <Compile Include="Services\ISubSubCategoriaService.cs" />
+    <Compile Include="Services\ISubSubTemaService.cs" />
+    <Compile Include="Services\ISubTemaService.cs" />
+    <Compile Include="Services\ITemaService.cs" />
+    <Compile Include="Services\ITipoUsuarioService.cs" />
+    <Compile Include="Services\IUsuarioService.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BookManagementSystem.Entities\BookManagementSystem.Entities.csproj">
+      <Project>{85812e45-91d0-45c9-a3c4-abef9ab0c0a0}</Project>
+      <Name>BookManagementSystem.Entities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

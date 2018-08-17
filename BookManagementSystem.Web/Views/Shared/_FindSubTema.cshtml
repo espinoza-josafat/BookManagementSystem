@@ -1,0 +1,172 @@
+﻿<div id="divModalFindSubTema" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalFindSubTema()">&times;</button>
+
+                <h4 class="modal-title">Búsqueda de Subtema</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" for="FindSubTemaDescripcion">Subtema</label>
+
+                            <div class="input-group">
+                                <input type="text" class="form-control input-md" id="FindSubTemaDescripcion" autocomplete="off">
+
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-md pull-right" onclick="findSubTemaPorCoincidencia()">
+                                        <span class="fa fa-search"></span> Buscar
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table id="tblFindSubTema" class="table table-bordered table-vmiddle">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="descripcion" data-width="70%">DESCRIPCIÓN</th>
+                                        <th data-column-id="id" data-formatter="comandos" data-sortable="false" data-width="30%">ACCIÓN</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-link pull-right" value="Cerrar" onclick="ocultarModalFindSubTema()" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _bootGridFindSubTema = null;
+    var _temaFindSubTema = -1;
+    var _onSelectSubTema = null;
+
+    function mostrarModalFindSubTema(categoria, onSelectSubTema) {
+        _temaFindSubTema = categoria;
+        _onSelectSubTema = onSelectSubTema;
+
+        $(document).ready(function () {
+            $("#FindSubTemaDescripcion").val("");
+
+            var divModalFindSubTema = $("#divModalFindSubTema");
+
+            if (!_bootGridFindSubTema)
+                _bootGridFindSubTema = $("#tblFindSubTema").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='seleccionarElementoBootGridFindSubTema(\"" + row.id + "\", \"" + row.descripcion + "\")'>" +
+                                    "<span class='fa fa-check'></span> Seleccionar" +
+                                   "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findSubTemaPorCoincidencia();
+
+            divModalFindSubTema.on("shown.bs.modal", function () {
+                $("#FindSubTemaDescripcion").val("");
+
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#FindSubTemaDescripcion").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalFindSubTema.modal("show");
+        });
+    }
+
+    function ocultarModalFindSubTema() {
+        _temaFindSubTema = -1;
+        _onSelectSubTema = null;
+
+        var divModalFindSubTema = $("#divModalFindSubTema");
+        divModalFindSubTema.modal("hide");
+    }
+
+    function seleccionarElementoBootGridFindSubTema(id, descripcion) {
+        if (_onSelectSubTema && typeof (_onSelectSubTema) === "function")
+            _onSelectSubTema(id, descripcion);
+
+        ocultarModalFindSubTema();
+    }
+
+    function findSubTemaPorCoincidencia() {
+        var descripcion = $("#FindSubTemaDescripcion").val().trim();
+
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/SubTema/ObtenerPorCoincidencia?tema=" + _temaFindSubTema + "&descripcion=" + (descripcion ? encodeURI(descripcion) : ""),
+            function (data) {
+                if (data && Array.isArray(data) && data.length > 0)
+                    _bootGridFindSubTema.bootgrid("append", data);
+            }, null, function () {
+                if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                    mostrarOverlayLoading(true);
+
+                _bootGridFindSubTema.bootgrid("clear");
+            }, null);
+    }
+</script>

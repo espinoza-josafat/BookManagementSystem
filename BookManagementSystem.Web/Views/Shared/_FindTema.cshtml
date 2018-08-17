@@ -1,0 +1,169 @@
+﻿<div id="divModalFindTema" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalFindTema()">&times;</button>
+
+                <h4 class="modal-title">Búsqueda de Tema</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" for="FindTemaDescripcion">Tema</label>
+
+                            <div class="input-group">
+                                <input type="text" class="form-control input-md" id="FindTemaDescripcion" autocomplete="off">
+
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-primary btn-md pull-right" onclick="findTemaPorCoincidencia()">
+                                        <span class="fa fa-search"></span> Buscar
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table id="tblFindTema" class="table table-bordered table-vmiddle">
+                                <thead>
+                                    <tr>
+                                        <th data-column-id="descripcion" data-width="70%">DESCRIPCIÓN</th>
+                                        <th data-column-id="id" data-formatter="comandos" data-sortable="false" data-width="30%">ACCIÓN</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-link pull-right" value="Cerrar" onclick="ocultarModalFindTema()" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _bootGridFindTema = null;
+    var _onSelectTema = null;
+
+    function mostrarModalFindTema(onSelectTema) {
+        _onSelectTema = onSelectTema;
+
+        $(document).ready(function () {
+            $("#FindTemaDescripcion").val("");
+
+            var divModalFindTema = $("#divModalFindTema");
+
+            if (!_bootGridFindTema)
+                _bootGridFindTema = $("#tblFindTema").bootgrid({
+                    formatters: {
+                        comandos: function (column, row) {
+                            return "<button type='button' class='btn btn-success' onclick='seleccionarElementoBootGridFindTema(\"" + row.id + "\", \"" + row.descripcion + "\")'>" +
+                                    "<span class='fa fa-check'></span> Seleccionar" +
+                                   "</button>";
+                        }
+                    },
+                    labels: {
+                        all: "Todo",
+                        infos: "Mostrando de {{ctx.start}} a {{ctx.end}} registros de {{ctx.total}}",
+                        loading: "Cargando...",
+                        noResults: "No se encontraron registros",
+                        refresh: "Actualizar",
+                        search: "Buscar",
+                    }
+                });
+
+            findTemaPorCoincidencia();
+
+            divModalFindTema.on("shown.bs.modal", function () {
+                $("#FindTemaDescripcion").val("");
+
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#FindTemaDescripcion").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalFindTema.modal("show");
+        });
+    }
+
+    function ocultarModalFindTema() {
+        _onSelectTema = null;
+
+        var divModalFindTema = $("#divModalFindTema");
+        divModalFindTema.modal("hide");
+    }
+
+    function seleccionarElementoBootGridFindTema(id, descripcion) {
+        if (_onSelectTema && typeof (_onSelectTema) === "function")
+            _onSelectTema(id, descripcion);
+
+        ocultarModalFindTema();
+    }
+
+    function findTemaPorCoincidencia() {
+        var descripcion = $("#FindTemaDescripcion").val().trim();
+
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/Tema/ObtenerPorCoincidencia?descripcion=" + (descripcion ? encodeURI(descripcion) : ""),
+            function (data) {
+                if (data && Array.isArray(data) && data.length > 0)
+                    _bootGridFindTema.bootgrid("append", data);
+            }, null, function () {
+                if (mostrarOverlayLoading && typeof (mostrarOverlayLoading) === "function")
+                    mostrarOverlayLoading(true);
+
+                _bootGridFindTema.bootgrid("clear");
+            }, null);
+    }
+</script>

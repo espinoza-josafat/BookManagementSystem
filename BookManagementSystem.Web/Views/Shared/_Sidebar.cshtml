@@ -1,0 +1,165 @@
+﻿<aside class="main-sidebar">
+    <section class="sidebar">
+        @* BEGIN Search *@
+        @*<form action="#" method="get" class="sidebar-form">
+            <div class="input-group">
+                <input type="text" name="q" class="form-control" placeholder="Search...">
+                <span class="input-group-btn">
+                    <button type="submit" name="search" id="search-btn" class="btn btn-flat">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </span>
+            </div>
+        </form>*@
+        @* END Search *@
+        @* BEGIN Menu *@
+        <ul class="sidebar-menu">
+            <li class="header">MENÚ</li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-folder"></i><span>Catálogos</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Content("~/Editorial/Edicion")"><i class="fa fa-circle-o"></i>Editoriales</a></li>
+                    <li><a href="@Url.Content("~/Autor/Edicion")"><i class="fa fa-circle-o"></i>Autores</a></li>
+                    <li><a href="@Url.Content("~/Categoria/Edicion")"><i class="fa fa-circle-o"></i>Categorías</a></li>
+                    <li><a href="@Url.Content("~/SubCategoria/Edicion")"><i class="fa fa-circle-o"></i>Subcategorías</a></li>
+                    <li><a href="@Url.Content("~/SubSubCategoria/Edicion")"><i class="fa fa-circle-o"></i>Subsubcategorías</a></li>
+                    <li><a href="@Url.Content("~/Tema/Edicion")"><i class="fa fa-circle-o"></i>Temas</a></li>
+                    <li><a href="@Url.Content("~/SubTema/Edicion")"><i class="fa fa-circle-o"></i>Subtemas</a></li>
+                    <li><a href="@Url.Content("~/SubSubTema/Edicion")"><i class="fa fa-circle-o"></i>Subsubtemas</a></li>
+                    @*<li><a href="@Url.Content("~/Home/DocumentosRecepcion")"><i class="fa fa-circle-o"></i>Recepción</a></li>*@
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-folder"></i><span>Libro</span>
+                    <span class="pull-right-container">
+                        <i class="fa fa-angle-left pull-right"></i>
+                    </span>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="@Url.Content("~/Libro/Consulta")"><i class="fa fa-circle-o"></i>Consulta</a></li>
+                    <li><a href="@Url.Content("~/Libro/Edicion")"><i class="fa fa-circle-o"></i>Edición</a></li>
+                    @*<li><a href="@Url.Content("~/Home/DocumentosRecepcion")"><i class="fa fa-circle-o"></i>Recepción</a></li>*@
+                </ul>
+            </li>
+
+            @*<li class="treeview">
+        <a href="#">
+            <i class="fa fa-file-code-o"></i><span>Crear CFDI</span>
+            <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+            </span>
+        </a>
+        <ul class="treeview-menu">
+            <li class="active"><a href="@Url.Content("~/Comprobante/Factura")"><i class="fa fa-circle-o"></i>Factura V3.3</a></li>
+            @*<li><a href="@Url.Content("~/Comprobante/Factura32")"><i class="fa fa-circle-o"></i>Factura v3.2</a></li>*@
+            @*<li><a href="@Url.Content("~/Comprobante/NotaCredito")"><i class="fa fa-circle-o"></i>Nota de Crédito</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-archive"></i><span>Recepción</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="@Url.Content("~/Recepcion/Factura")"><i class="fa fa-circle-o"></i>CFDIs</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-cogs"></i><span>Configuración</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li class="active"><a href="@Url.Content("~/Configuracion/Emisores")"><i class="fa fa-circle-o"></i>Emisores</a></li>
+                <li class="active"><a href="@Url.Content("~/Configuracion/Sucursales")"><i class="fa fa-circle-o"></i>Sucursales</a></li>
+                <li class="active"><a href="@Url.Content("~/Configuracion/Receptores")"><i class="fa fa-circle-o"></i>Receptores</a></li>
+                <li class="active"><a href="@Url.Content("~/Configuracion/Estaciones")"><i class="fa fa-circle-o"></i>Estaciones</a></li>
+                <li class="active"><a href="@Url.Content("~/Configuracion/ProductosServicios")"><i class="fa fa-circle-o"></i>Productos y servicios</a></li>
+                <li class="active"><a href="@Url.Content("~/Configuracion/Series")"><i class="fa fa-circle-o"></i>Series</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-file-excel-o"></i><span>Reportes</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="@Url.Content("~/Home/DocumentosEmision")><i class="fa fa-circle-o"></i>Emisión</a></li>
+                <li><a href="@Url.Content("~/Home/DocumentosRecepcion")><i class="fa fa-circle-o"></i>Recepción</a></li>
+            </ul>
+        </li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-file-text-o"></i><span>Log</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="@Url.Content("~/Log/Timbrado")"><i class="fa fa-circle-o"></i>Timbrado</a></li>
+                <li><a href="@Url.Content("~/Home/DocumentosRecepcion")"><i class="fa fa-circle-o"></i>Recepción</a></li>
+            </ul>
+        </li>*@
+
+
+            @*<li><a href="@Url.Content("~/Home/Index")"><i class="fa fa-circle-o"></i>Administrador de checklist</a></li>*@
+
+
+
+
+
+
+            @*Inicia Menú principal*@
+
+            @*<li><a href="@Url.Content("~/Operacion/Captura")"><i class="fa fa-circle-o"></i>Captura</a></li>
+
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-circle-o"></i> <span>Administrador</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="@Url.Content("~/Administrador/Cabecera")">Cabecera</a></li>
+                <li><a href="@Url.Content("~/Administrador/Checklist")">Checklist</a></li>
+            </ul>
+        </li>*@
+
+            @*Termina Menú principal*@
+
+
+
+
+
+
+            @*<li class="active"><a href="#"><i class="fa fa-link"></i> <span>Link</span></a></li>
+        <li><a href="#"><i class="fa fa-link"></i> <span>Another Link</span></a></li>
+        <li class="treeview">
+            <a href="#">
+                <i class="fa fa-link"></i> <span>Multilevel</span>
+                <span class="pull-right-container">
+                    <i class="fa fa-angle-left pull-right"></i>
+                </span>
+            </a>
+            <ul class="treeview-menu">
+                <li><a href="#">Link in level 2</a></li>
+                <li><a href="#">Link in level 2</a></li>
+            </ul>
+        </li>*@
+        </ul>
+        @* END Menu *@
+    </section>
+</aside>

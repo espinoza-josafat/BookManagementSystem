@@ -1,0 +1,186 @@
+﻿<div id="divModalEditSubSubCategoria" class="modal" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" onclick="ocultarModalEditSubSubCategoria()">&times;</button>
+
+                <h4 class="modal-title">Edición de Subsubcategoría</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label class="control-label" for="EditSubSubCategoriaDescripcion">Subsubcategoría *</label>
+
+                            <input type="hidden" id="hiddenEditSubCategoriaId" />
+                            <input type="hidden" id="hiddenEditSubSubCategoriaId" />
+                            <input type="text" class="form-control input-sm" id="EditSubSubCategoriaDescripcion" maxlength="250" autocomplete="off" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info pull-right" id="btnGuardarEditSubSubCategoria" onclick="guardarModalEditSubSubCategoria()">
+                    <span class="fa fa-save"></span> Guardar
+                </button>
+                <button type="button" class="btn btn-danger pull-right" id="btnEliminarEditSubSubCategoria" onclick="eliminarModalEditSubSubCategoria()" style="margin-right: 20px;">
+                    <span class="fa fa-minus"></span> Eliminar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var _onActionEditSubSubCategoria = null;
+
+    function mostrarModalEditSubSubCategoria(idSubCategoriaEditSubSubCategoria, idEditSubSubCategoria, onActionEditSubSubCategoria) {
+        _onActionEditSubSubCategoria = onActionEditSubSubCategoria;
+
+        $(document).ready(function () {
+            $("#hiddenEditSubSubCategoriaId").val("");
+            $("#hiddenEditSubCategoriaId").val(idSubCategoriaEditSubSubCategoria);
+            $("#EditSubSubCategoriaDescripcion").val("");
+            $("#btnEliminarEditSubSubCategoria").hide();
+
+            if (idEditSubSubCategoria && idEditSubSubCategoria > 0)
+                getEditSubSubCategoriaById(idEditSubSubCategoria);
+
+            var divModalEditSubSubCategoria = $("#divModalEditSubSubCategoria");
+
+            divModalEditSubSubCategoria.on("shown.bs.modal", function () {
+                /******** INICIA MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+                var modal = $(this);
+                var focusableChildren = modal.find("a[href], a[data-dismiss], area[href], input, select, textarea, button, iframe, object, embed, *[tabindex], *[contenteditable]");
+                var numElements = focusableChildren.length;
+                var currentIndex = 0;
+
+                $(document.activeElement).blur();
+
+                var focus = function () {
+                    var focusableElement = focusableChildren[currentIndex];
+                    if (focusableElement)
+                        focusableElement.focus();
+                };
+
+                var focusPrevious = function () {
+                    currentIndex--;
+                    if (currentIndex < 0)
+                        currentIndex = numElements - 1;
+
+                    focus();
+
+                    return false;
+                };
+
+                var focusNext = function () {
+                    currentIndex++;
+                    if (currentIndex >= numElements)
+                        currentIndex = 0;
+
+                    focus();
+
+                    return false;
+                };
+
+                $(document).on("keydown", function (e) {
+                    if (e.keyCode == 9 && e.shiftKey) {
+                        e.preventDefault();
+                        focusPrevious();
+                    }
+                    else if (e.keyCode == 9) {
+                        e.preventDefault();
+                        focusNext();
+                    }
+                });
+
+                $("#EditSubSubCategoriaDescripcion").focus();
+                /********    FIN MANEJO DEL TAB UNICAMENTE DENTRO DEL MODAL ********/
+            });
+
+            divModalEditSubSubCategoria.modal("show");
+        });
+    }
+
+    function ocultarModalEditSubSubCategoria() {
+        _onActionEditSubSubCategoria = null;
+
+        var divModalEditSubSubCategoria = $("#divModalEditSubSubCategoria");
+        divModalEditSubSubCategoria.off("shown.bs.modal");
+        divModalEditSubSubCategoria.modal("hide");
+    }
+
+    function getEditSubSubCategoriaById(id) {
+        AjaxGetNoCacheJsonAsync(
+            baseUrl + "Api/SubSubCategoria/ObtenerPorId?id=" + encodeURI(id),
+            function (data) {
+                if (data) {
+                    $("#hiddenEditSubSubCategoriaId").val(data.id);
+                    $("#hiddenEditSubCategoriaId").val(data.id_subcategoria);
+                    $("#EditSubSubCategoriaDescripcion").val(data.descripcion);
+
+                    $("#btnEliminarEditSubSubCategoria").show();
+
+                    $("#EditSubSubCategoriaDescripcion").focus();
+                }
+                else
+                    mostrarModalMensaje(2, "@ViewBag.Title", "No se encontró el registro", function () {
+                        ocultarModalEditSubSubCategoria();
+                    });
+            });
+    }
+
+    function guardarModalEditSubSubCategoria() {
+        var editSubSubCategoriaDescripcion = $("#EditSubSubCategoriaDescripcion").val().trim();
+
+        if (!editSubSubCategoriaDescripcion) {
+            mostrarModalMensaje(2, "@ViewBag.Title", "Se debe establecer la descripción de la Subsubcategoría antes de continuar");
+            return;
+        }
+
+        var data = {};
+        data.id_subcategoria = parseInt($("#hiddenEditSubCategoriaId").val());
+        data.descripcion = editSubSubCategoriaDescripcion;
+
+        var editSubSubCategoriaId = $("#hiddenEditSubSubCategoriaId").val().trim();
+
+        if (editSubSubCategoriaId)
+            data.id = parseInt(editSubSubCategoriaId);
+
+        AjaxPostNoCacheJsonAsync(
+            baseUrl + "Api/SubSubCategoria/Guardar",
+            data,
+            function (data) {
+                mostrarModalMensaje(1, "@ViewBag.Title", "La información se guardó correctamente");
+
+                if (_onActionEditSubSubCategoria && typeof (_onActionEditSubSubCategoria) === "function")
+                    _onActionEditSubSubCategoria();
+
+                ocultarModalEditSubSubCategoria();
+            });
+    }
+
+    function eliminarModalEditSubSubCategoria() {
+        mostrarModalConfirm(2, "@ViewBag.Title", "¿Estas seguro que deseas eliminar este elemento?", function () {
+            var data = {};
+
+            var editSubSubCategoriaId = $("#hiddenEditSubSubCategoriaId").val().trim();
+
+            if (editSubSubCategoriaId) {
+                data.id = parseInt(editSubSubCategoriaId);
+
+                AjaxPostNoCacheJsonAsync(
+                    baseUrl + "Api/SubSubCategoria/Eliminar",
+                    data,
+                    function (data) {
+                        mostrarModalMensaje(1, "@ViewBag.Title", "La información se eliminó correctamente");
+
+                        if (_onActionEditSubSubCategoria && typeof (_onActionEditSubSubCategoria) === "function")
+                            _onActionEditSubSubCategoria();
+
+                        ocultarModalEditSubSubCategoria();
+                    });
+            }
+        });
+    }
+</script>
